@@ -92,4 +92,4 @@ with st.sidebar:
         with st.spinner("Fetching selected article..."):
             selected_article_text = title_to_doc.get(selected_title, "")
             st.session_state.last_retrieved_text = selected_article_text
-            st.text_area("Selected article", selected_article_text, height=300, key="retrieved_articles")
+            st.text_area("Selected article", selected_article_text, height=300, key="retrieved_articles_title")
