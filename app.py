@@ -8,7 +8,7 @@ from llm import llm
 K = 5
 torch.classes.__path__ = []
 
-embedding_model = SentenceTransformerEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", device="cpu" )
+embedding_model = SentenceTransformerEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2",model_kwargs={"device": "cpu"})
 vectorstore = FAISS.load_local("faiss_index", embedding_model, allow_dangerous_deserialization=True)
 retriever = vectorstore.as_retriever(search_type="mmr", search_kwargs={"k": 15})
 reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
