@@ -9,9 +9,9 @@ MODELS = ['gemini-2.0-flash', 'gemini-2.0-flash', 'gemini-1.5-flash']
 
 load_dotenv()
 
+GEMINI_API_KEY = None 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-if not GEMINI_API_KEY:
-    raise ValueError("GEMINI_API_KEY not found in .env file")
+if not GEMINI_API_KEY:GEMINI_API_KEY='AIzaSyBkqapafNApFb85__rrueoSW-oRRRxKPmA'
 
 genai.configure(api_key=GEMINI_API_KEY)
 
