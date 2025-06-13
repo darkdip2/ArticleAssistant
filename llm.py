@@ -15,6 +15,40 @@ if not GEMINI_API_KEY:GEMINI_API_KEY='AIzaSyBkqapafNApFb85__rrueoSW-oRRRxKPmA'
 
 genai.configure(api_key=GEMINI_API_KEY)
 
+
+K = 5
+def split_document(content: str) -> str:
+    lines = content.split("\n")
+    quarter_length = len(lines) // 4
+    return "\n".join(lines[:quarter_length])
+
+def parse_top_K_articles(docs: list) -> str:
+    combined_content = "\n\n".join(split_document(doc.page_content) for doc in docs[:K])
+    return combined_content
+
+def is_followup_query(user_input: str, history: list) -> bool:
+    if not history or len(history) < 2:
+        return False
+    prompt = f"Given the conversation history and the latest user input, determine if the latest input is a follow-up question related to the previous context.\n\nHistory:\n"
+    for msg in history[-3:]:
+        prompt += f"{msg['role'].capitalize()}: {msg['content']}\n"
+    prompt += f"\nLatest input: {user_input}\n\nIs the latest input a follow-up question? Respond with 'Yes' or 'No'."
+    response = llm([{"role": "user", "parts": [{"text": prompt}]}])
+    return response.strip().lower() == "yes"
+
+def build_llm_contents(user_input: str, reranked_text: str, history: list) -> list:
+    context = reranked_text
+    history_parts = []
+    for msg in history[-3:]:
+        if msg["role"] == "user":
+            history_parts.append({"role": "user", "parts": [{"text": msg["content"]}]})
+        elif msg["role"] == "assistant":
+            history_parts.append({"role": "assistant", "parts": [{"text": msg["content"]}]})
+    history_parts.append({"role": "user", "parts": [{"text": f"Relevant context:\n{context}"}]})
+    history_parts.append({"role": "user", "parts": [{"text": user_input}]})
+    return history_parts
+
+
 def llm(contents: list, temperature: float = 0.53, tokens: int = 2048) -> str:
     if not hasattr(llm, "call_count"):
         llm.call_count = 0

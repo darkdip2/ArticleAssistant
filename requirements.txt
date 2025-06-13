@@ -11,3 +11,4 @@ nltk
 tf-keras
 python-magic
 faiss-cpu
+rank_bm25
